@@ -71,6 +71,15 @@ self.addEventListener('fetch', function(e) {
 
 });
 
-self.addEventListener('load',function(e){
-  console.log('Online: ', navigator.onLine);
-});
+// self.addEventListener('fetch', function(e) {
+//   e.respondWith(
+//     caches
+//       .match(e.request)
+//       .catch(function(e){
+//         return fetch(e.request);
+//       })
+//       .catch(function(e){
+//         return caches.match('./offline.html');
+//       })
+//   )
+// });
