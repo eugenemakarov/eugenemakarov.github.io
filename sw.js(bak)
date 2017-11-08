@@ -19,6 +19,7 @@ self.addEventListener('install', function(e) {
   );
 });
 
+//Clear chaches that we no longer need
 self.addEventListener('activate', function(e) {
   // console.log("[ServiceWorker] Activated");
 
@@ -50,28 +51,58 @@ self.addEventListener('fetch', function(e) {
   //     })
   // );
 
-  e.respondWith(
-    // try fetching a resource from the network
-    fetch(e.request)
-      .then(response => {
+  // WORKS HERE###
+  // e.respondWith(
+  //   // try fetching a resource from the network
+  //   fetch(e.request)
+  //     .then(response => {
        
-        // always go to offline page if we are offline
-        if (!navigator.onLine) {
-          return caches.match('./offline.html')
-        }
-        return response;
-      })
-      .catch(() => {
-        // the resource could not be fetched from network
-        // go to offline page
-        return caches.match('./offline.html');
-      })
-  )
- 
+  //       // always go to offline page if we are offline
+  //       if (!navigator.onLine) {
+  //         return caches.match('./offline.html')
+  //       }
+  //       return response;
+  //     })
+  //     .catch(() => {
+  //       // the resource could not be fetched from network
+  //       // go to offline page
+  //       return caches.match('./offline.html');
+  //     })
+  // )
+  // ###
+
+    if (!navigator.onLine) {
+      console.log('We are offline.');
+      //how to display "you are offline message to the user"
+      if (document) {
+        document.getElementById('offline-header').innerHTML = 'You are offline buddy';
+      } else {
+        console.log('No document ?');
+      }
+    }
+
+    if (e.request.mode === 'navigate' || (e.request.method === 'GET' && e.request.headers.get('accept').includes('text/html'))) {
+      
+      console.log('trying to navigate');
+
+      e.respondWith(
+        fetch(e.request.url).catch(error => {
+          var msg = "Request failed!";
+          console.log(msg);
+
+          // Return the offline page
+          // new Response('<p>Hello from your friendly neighbourhood service worker!</p>', {
+          //   headers: { 'Content-Type': 'text/html' }
+          // });
+          return caches.match('./offline.html');
+        })
+      );
+
+    }
 
 });
 
-// self.addEventListener('fetch', function(e) {
+// self.addeListener('fetch', function(e) {
 //   e.respondWith(
 //     caches
 //       .match(e.request)
